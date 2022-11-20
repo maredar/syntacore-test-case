@@ -7,6 +7,9 @@
 #include <vector>
 #include <iterator>
 #include <cctype>
+#include <regex>
+
+#include "tree.hpp"
 
 class empty_command_line_exception : public std::exception {
 public:
@@ -23,50 +26,92 @@ public:
 };
 
 class Application {
+    struct CliCommand {
+        const char* cmd;
+        const int arg;
+        CliCommand(const char* cmd, const int arg) : cmd{ cmd }, arg{ arg } {
+            //empty
+        }
+    };
 public:
-    Application() : _input_line{}, _tokens{} {
+    Application() : _input_line{}, _tokens{}, _tree{} {
 
     }
 
 public:
     void run() {
         std::getline(std::cin, _input_line);
-        _tokens = parse();
-        if(validate()) {
-            execute();
-        }
+        _tokens = _parse();
+        _execute();
+        _tree.print();
     }
 
 private:
     std::string _input_line;
-    std::vector<std::string> _tokens;
+    std::vector<CliCommand> _tokens;
+
+    Containers::RBTree _tree;
 
 private:
-    std::vector<std::string> parse() {
+    bool _is_integer( std::string token ) {
+        return std::regex_match(token, std::regex(("((\\+|-)?[[:digit:]]+)?")));
+    }
+
+    std::vector<CliCommand> _parse() {
         if (_input_line.empty()) {
             throw empty_command_line_exception();
         }
         std::istringstream iss(_input_line);
         std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
                         std::istream_iterator<std::string>{}};
-        return tokens;
+
+        std::vector<CliCommand> commands{};
+        commands.reserve(tokens.size());
+
+        if(_validate(tokens)){
+            for(int i = 0; i < tokens.size(); i += 2) {
+                commands.push_back(CliCommand(tokens[i].c_str(), stoi(tokens[i+1])));
+            }
+        }
+        return commands;
     }
 
-    bool validate() {
-        for(const auto& token : _tokens) {
-            for(const auto& c : token) {
-                if(c != 'k' || c != 'm' || c != 'n') {
-                    if(!std::isdigit(c)) {
-                        throw invalid_command_line_argument_exception();
-                    }
-                }
+    bool _validate(const std::vector<std::string>& tokens) {
+        size_t sz = tokens.size();
+        if (sz % 2 != 0) {
+            throw invalid_command_line_argument_exception();
+        }
+        for(int i = 0; i < sz; i += 2) {
+            const std::string* token = &tokens.at(i);
+            const std::string* arg = &tokens.at(i+1);
+
+            if (*token != "k" && *token != "m" && *token != "n") {
+                throw invalid_command_line_argument_exception();
+            }
+            if (!_is_integer(*arg)) {
+                throw invalid_command_line_argument_exception();
             }
         }
         return true;
     }
 
-    void execute() {
-        return;
+    void _execute() {
+        for (const auto& token : _tokens) {
+            switch (*token.cmd)
+            {
+            case 'k':
+                _tree.insert(token.arg);
+                break;
+            case 'm':
+
+                break;
+            case 'n':
+
+                break;
+            default:
+                break;
+            }
+        }
     }
 };
 
@@ -75,7 +120,7 @@ int main() {
         Application app{};
         app.run();
     } catch(std::exception& ex) {
-        std::cout << "exception caught!";
+        std::cout << ex.what();
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
