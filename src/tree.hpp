@@ -65,15 +65,15 @@ private:
         std::queue<Node*> queue{};
         queue.push(_root);
         while (!queue.empty()) {
-            Node* temp = queue.front();
+            Node* node = queue.front();
             queue.pop();
-            if (temp->left != nullptr) {
-                queue.push(temp->left);
+            if (node->left != nullptr) {
+                queue.push(node->left);
             }
-            if (temp->right != nullptr) {
-                queue.push(temp->right);
+            if (node->right != nullptr) {
+                queue.push(node->right);
             }
-            delete temp;
+            delete node;
         }
     }
 
