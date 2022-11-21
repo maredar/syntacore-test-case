@@ -83,6 +83,8 @@ public:
         _tokens = _parse();
         _execute();
         _tree.print();
+        std::cout << _tree.size() << std::endl;
+        std::cout << _tree.count_nodes_less(5) << std::endl;
     }
 
 private:
