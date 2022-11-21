@@ -92,19 +92,40 @@ public:
         _rebalance(node);
     }
 
+    void find_from_begin(const int key) const noexcept {
+
+    }
+
+    size_t count_nodes_lower(const int key) const noexcept {
+        size_t counter = _count_nodes_lower(key, _root);
+        return counter;
+    }
+
 private:
+    size_t _count_nodes_lower(const int key, Node* subtree_root) const noexcept {
+        if (key < subtree_root->key) {
+
+        }
+        return 1;
+    }
+
    void _print(const std::string& prefix, const Node* node, bool isLeft) const noexcept
     {
         if( node != nullptr )
         {
             std::cout << prefix;
-
             std::cout << (isLeft ? "├──" : "└──" );
+            std::cout << node->key;
+            switch (node->color) {
+                case Node::BLACK:
+                    std::cout << " b";
+                    break;
+                case Node::RED:
+                    std::cout << " r";
+                    break;
+            }
+            std::cout << std::endl;
 
-            // print the value of the node
-            std::cout << node->key << std::endl;
-
-            // enter the next tree level - left and right branch
             _print( prefix + (isLeft ? "│   " : "    "), node->left, true);
             _print( prefix + (isLeft ? "│   " : "    "), node->right, false);
         }
@@ -132,18 +153,6 @@ private:
             else {
                 _insert(node, current_node->right);
             }
-        }
-    }
-
-    void _recolor(Node* node) {
-        if (node == nullptr) {
-            throw except::null_node_access_exception("_recolor(Node*)");
-        }
-        if (node->color == Node::RED) {
-            node->color = Node::BLACK;
-        }
-        else {
-            node->color = Node::RED;
         }
     }
 
