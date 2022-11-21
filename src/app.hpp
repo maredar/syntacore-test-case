@@ -75,11 +75,13 @@ public:
     }
 
 public:
-    void run() {
-        std::getline(std::cin, _input_line);
+    void run(std::istream& input_stream) {
+        std::getline(input_stream, _input_line);
         _tokens = _parse();
         _execute();
-        _tree.print();
+        #ifdef TREE_PRINT
+            _tree.print();
+        #endif
     }
 
 private:
