@@ -61,9 +61,7 @@ struct Node {
 };
 
 /*
-* Self-balancing red-black tree with additional 
-* uint variable in each node to count how many 
-* childs each node has
+* Self-balancing red-black tree
 */
 class RBTree {
 public:
@@ -92,21 +90,40 @@ public:
         _rebalance(node);
     }
 
-    void find_from_begin(const int key) const noexcept {
-
+    int find_from_begin(const int key) const noexcept {
+        return 0;
     }
 
-    size_t count_nodes_lower(const int key) const noexcept {
-        size_t counter = _count_nodes_lower(key, _root);
+    size_t count_nodes_less(const int key) const noexcept {
+        size_t counter = _count_nodes_less(key, _root);
         return counter;
     }
 
-private:
-    size_t _count_nodes_lower(const int key, Node* subtree_root) const noexcept {
-        if (key < subtree_root->key) {
+    size_t size() const noexcept {
+        return _size(_root);
+    }
 
+private:
+    size_t _count_nodes_less(const int key, Node* subtree_root) const noexcept {
+        if (subtree_root == nullptr) {
+            return 0;
         }
-        return 1;
+
+        if (key <= subtree_root->key) {
+            return _count_nodes_less(key, subtree_root->left);
+        }
+        else {
+            return _size(subtree_root->left) + 1 + _count_nodes_less(key, subtree_root->right);
+        }
+    }
+
+    size_t _size(Node* root) const noexcept {
+        if (root == nullptr) {
+            return 0;
+        }
+        else {
+            return _size(root->left) + 1 + _size(root->right);
+        }
     }
 
    void _print(const std::string& prefix, const Node* node, bool isLeft) const noexcept
@@ -221,7 +238,6 @@ private:
         {
             parent = inserted->parent;
             grand_parent = inserted->parent->parent;
-
 
             if (parent == grand_parent->left) {
                 Node* uncle = grand_parent->right;
