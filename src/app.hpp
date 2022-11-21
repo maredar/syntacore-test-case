@@ -4,13 +4,10 @@
 #include <iostream>
 #include <string>
 #include <queue>
-#include <utility>
 #include <stdexcept>
-#include <sstream>
 #include <vector>
 #include <iterator>
-#include <cctype>
-#include <regex>
+#include <sstream>
 
 #include "tree.hpp"
 
@@ -92,8 +89,16 @@ private:
     Containers::RBTree _tree;
 
 private:
-    bool _is_integer( std::string token ) {
-        return std::regex_match(token, std::regex(("((\\+|-)?[[:digit:]]+)?")));
+    bool _is_integer(const std::string& token) {
+        bool negative_check = token[0] == '-';
+        size_t sz = token.length();
+
+        for(size_t i = negative_check ? 1 : 0; i < sz; ++i) {
+            if (!std::isdigit(token.at(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     std::vector<CliCommand> _parse() {
@@ -104,34 +109,26 @@ private:
         std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
                         std::istream_iterator<std::string>{}};
 
-        std::vector<CliCommand> commands{};
-        commands.reserve(tokens.size());
-
-        if(_validate(tokens)){
-            for(size_t i = 0; i < tokens.size(); i += 2) {
-                commands.push_back(CliCommand(*tokens[i].c_str(), stoi(tokens[i+1])));
-            }
-        }
-        return commands;
-    }
-
-    bool _validate(const std::vector<std::string>& tokens) {
         size_t sz = tokens.size();
         if (sz % 2 != 0) {
             throw except::invalid_commands_counter_exception(sz);
         }
-        for(size_t i = 0; i < sz; i += 2) {
-            const std::string* token = &tokens.at(i);
-            const std::string* arg = &tokens.at(i+1);
 
-            if (*token != "k" && *token != "m" && *token != "n") {
-                throw except::invalid_command_line_argument_exception(*token);
+        std::vector<CliCommand> commands{};
+        commands.reserve(sz);
+
+        for(size_t i = 0; i < sz; i += 2) {
+            const char cmd = *tokens.at(i).c_str();
+
+            if(cmd != 'k' && cmd != 'm' && cmd != 'n') {
+                throw except::invalid_command_line_argument_exception(std::to_string(cmd));
             }
-            if (!_is_integer(*arg)) {
-                throw except::invalid_command_line_argument_exception(*arg);
+            if (!_is_integer(tokens.at(i+1))) {
+                throw except::invalid_command_line_argument_exception(tokens.at(i+1));
             }
+            commands.push_back(CliCommand(cmd, std::stoi(tokens.at(i+1))));
         }
-        return true;
+        return commands;
     }
 
     void _execute() {
