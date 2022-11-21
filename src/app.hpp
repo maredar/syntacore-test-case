@@ -59,7 +59,7 @@ private:
     std::string _err_msg;
 };
 
-}
+} //namespace except
 
 class Application {
     struct CliCommand {
@@ -71,7 +71,7 @@ class Application {
     };
 public:
     Application() : _input_line{}, _tokens{}, _tree{} {
-
+        //empty
     }
 
 public:
@@ -118,15 +118,15 @@ private:
         commands.reserve(sz);
 
         for(size_t i = 0; i < sz; i += 2) {
-            const char cmd = *tokens.at(i).c_str();
+            const char* cmd = tokens.at(i).c_str();
 
-            if(cmd != 'k' && cmd != 'm' && cmd != 'n') {
-                throw except::invalid_command_line_argument_exception(std::to_string(cmd));
+            if(cmd != "k" && cmd != "m" && cmd != "n") {
+                throw except::invalid_command_line_argument_exception(cmd);
             }
             if (!_is_integer(tokens.at(i+1))) {
                 throw except::invalid_command_line_argument_exception(tokens.at(i+1));
             }
-            commands.push_back(CliCommand(cmd, std::stoi(tokens.at(i+1))));
+            commands.push_back(CliCommand(*cmd, std::stoi(tokens.at(i+1))));
         }
         return commands;
     }
