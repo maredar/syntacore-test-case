@@ -5,10 +5,8 @@
 
 #include "../src/tree.hpp"
 
-static STC::Containers::RBTree SUT_SAMPLE;
-
 TEST(TestTreeSize, ReturnsRightSize) {
-    STC::Containers::RBTree sut(SUT_SAMPLE);
+    STC::Containers::RBTree sut;
     EXPECT_EQ(sut.size(), 0);
     sut.insert(0);
     sut.insert(1);
