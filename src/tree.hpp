@@ -24,16 +24,13 @@ class key_already_exists_exception : public std::exception {
 
 } //namespace except
 
-namespace {
-
 struct Node {
     enum color_t { BLACK, RED } color;
+    int key;
 
     Node* left;
     Node* right;
     Node* parent;
-
-    int key;
 
     Node(int key, color_t color = color_t::RED) 
         : color{ color }, key{ key }, left{ nullptr }, right{ nullptr }, parent{ nullptr } 
@@ -41,8 +38,6 @@ struct Node {
         //empty
     }
 };
-
-} //namespace
 
 /*
 * Self-balancing red-black tree with additional 
@@ -187,7 +182,7 @@ private:
     
     void _rebalance(Node* inserted) noexcept {
         if (inserted == nullptr) {
-            throw except::null_node_access_exception();
+            return;
         }
         Node* parent = nullptr;
         Node* grand_parent = nullptr;
