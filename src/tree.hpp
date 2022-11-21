@@ -5,6 +5,7 @@
 #include <queue>
 #include <iostream>
 #include <algorithm>
+#include <stack>
 
 namespace STC {
 namespace Containers {
@@ -32,6 +33,22 @@ public:
         _err_msg += "Failed to add key: ";
         _err_msg += std::to_string(key) + ". ";
         _err_msg += "Key already exists!";
+    }
+
+public:
+    const char* what() const noexcept override {
+        return _err_msg.c_str();
+    }
+
+private:
+    std::string _err_msg;
+};
+
+class invalid_index_requested_exception : public std::exception {
+public:
+    invalid_index_requested_exception(const size_t index) : _err_msg{} {
+        _err_msg += "Requested index '" + std::to_string(index) + "' ";
+        _err_msg += " is out of bound!";
     }
 
 public:
@@ -76,7 +93,7 @@ public:
 public:
     void print() const noexcept
     {
-        _print("", _root, false);    
+        _print("#", _root, false);    
     }
 
     void insert(const int key) {
@@ -90,8 +107,29 @@ public:
         _rebalance(node);
     }
 
-    int find_from_begin(const int key) const noexcept {
-        return 0;
+    int find_from_begin(const size_t index) const noexcept {
+        std::stack<Node *> s;
+        Node* curr = _root;
+
+        size_t counter = index;
+
+        while ((curr != nullptr || s.empty() == false)) {
+            while (curr !=  nullptr) {
+                s.push(curr);
+                curr = curr->left;
+            }
+            curr = s.top();
+            s.pop();
+            counter--;
+            if (counter == 0) {
+                break;
+            }
+            curr = curr->right;
+        }
+        if (counter != 0) {
+            throw except::invalid_index_requested_exception(index);
+        }
+        return curr->key;
     }
 
     size_t count_nodes_less(const int key) const noexcept {

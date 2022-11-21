@@ -6,7 +6,7 @@ int main() {
     try {
         STC::Application app{};
         app.run();
-    } catch(std::exception& ex) {
+    } catch(const std::exception& ex) {
         std::cout << ex.what() << std::endl;
         return EXIT_FAILURE;
     }

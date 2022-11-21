@@ -83,8 +83,6 @@ public:
         _tokens = _parse();
         _execute();
         _tree.print();
-        std::cout << _tree.size() << std::endl;
-        std::cout << _tree.count_nodes_less(5) << std::endl;
     }
 
 private:
@@ -144,15 +142,16 @@ private:
                 _tree.insert(token.arg);
                 break;
             case 'm':
-                //_tree.find_from_begin(token.arg);
+                std::cout << _tree.find_from_begin(token.arg) << " ";
                 break;
             case 'n':
-                //__tree.count_nodes_under(token.arg);
+                std::cout << _tree.count_nodes_less(token.arg) << " ";
                 break;
             default:
                 break;
             }
         }
+        std::cout << std::endl;
     }
 
 };
