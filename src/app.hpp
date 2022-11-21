@@ -78,7 +78,7 @@ private:
         commands.reserve(tokens.size());
 
         if(_validate(tokens)){
-            for(int i = 0; i < tokens.size(); i += 2) {
+            for(size_t i = 0; i < tokens.size(); i += 2) {
                 commands.push_back(CliCommand(tokens[i].c_str(), stoi(tokens[i+1])));
             }
         }
@@ -90,7 +90,7 @@ private:
         if (sz % 2 != 0) {
             throw except::invalid_command_line_argument_exception();
         }
-        for(int i = 0; i < sz; i += 2) {
+        for(size_t i = 0; i < sz; i += 2) {
             const std::string* token = &tokens.at(i);
             const std::string* arg = &tokens.at(i+1);
 
