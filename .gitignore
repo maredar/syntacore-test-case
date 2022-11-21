@@ -1,6 +1,3 @@
-#executable
-stc
-
 #cmake
 /build
 
@@ -36,3 +33,5 @@ stc
 *.exe
 *.out
 *.app
+stc_test
+stc
