@@ -1,3 +1,9 @@
+#executable
+stc
+
+#cmake
+/build
+
 # Prerequisites
 *.d
 
