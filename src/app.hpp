@@ -23,13 +23,43 @@ public:
     empty_command_line_exception() {
         
     }
+
+public:
+    const char* what() const noexcept override {
+        return "Given command line is empty!";
+    }
+};
+
+class invalid_commands_counter_exception : public std::exception {
+public:
+    invalid_commands_counter_exception(size_t cur_size) : _err_msg{} {
+        _err_msg += "Wrong number of arguments given: ";
+        _err_msg += std::to_string(cur_size) + "; ";
+        _err_msg += "expected: " + std::to_string(cur_size + 1) + " or " + std::to_string(cur_size - 1);
+    }
+
+public:
+    const char* what() const noexcept override {
+        return _err_msg.c_str();
+    }
+
+private:
+    std::string _err_msg;
 };
 
 class invalid_command_line_argument_exception : public std::exception {
 public:
-    invalid_command_line_argument_exception() {
-
+    invalid_command_line_argument_exception(const std::string& failed) : _err_msg{} {
+        _err_msg += "Token '" + failed + "' is not valid argument!";
     }
+
+public:
+    const char* what() const noexcept override {
+        return _err_msg.c_str();
+    }
+
+private:
+    std::string _err_msg;
 };
 
 }
@@ -88,17 +118,17 @@ private:
     bool _validate(const std::vector<std::string>& tokens) {
         size_t sz = tokens.size();
         if (sz % 2 != 0) {
-            throw except::invalid_command_line_argument_exception();
+            throw except::invalid_commands_counter_exception(sz);
         }
         for(size_t i = 0; i < sz; i += 2) {
             const std::string* token = &tokens.at(i);
             const std::string* arg = &tokens.at(i+1);
 
             if (*token != "k" && *token != "m" && *token != "n") {
-                throw except::invalid_command_line_argument_exception();
+                throw except::invalid_command_line_argument_exception(*token);
             }
             if (!_is_integer(*arg)) {
-                throw except::invalid_command_line_argument_exception();
+                throw except::invalid_command_line_argument_exception(*arg);
             }
         }
         return true;
