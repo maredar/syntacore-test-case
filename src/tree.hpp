@@ -10,16 +10,37 @@ namespace STC {
 namespace Containers {
 namespace except {
 
-class invalid_init_exception : public std::exception {
-
-};
-
 class null_node_access_exception : public std::exception {
+public:
+    null_node_access_exception(std::string&& node_access_code) {
+        _err_msg = std::move(node_access_code);
+        _err_msg += " code tries to access 'nullptr' node!";
+    }
 
+public:
+    const char* what() const noexcept override {
+        return _err_msg.c_str();
+    }
+
+private:
+    std::string _err_msg;
 };
 
 class key_already_exists_exception : public std::exception {
+public:
+    key_already_exists_exception(const int key) : _err_msg{} {
+        _err_msg += "Failed to add key: ";
+        _err_msg += std::to_string(key) + ". ";
+        _err_msg += "Key already exists!";
+    }
 
+public:
+    const char* what() const noexcept override {
+        return _err_msg.c_str();
+    }
+
+private:
+    std::string _err_msg;
 };
 
 } //namespace except
@@ -55,13 +76,12 @@ public:
     }
 
 public:
-    void print()
+    void print() const noexcept
     {
         _print("", _root, false);    
     }
 
-
-    void insert(int key) {
+    void insert(const int key) {
         Node* node = new Node(key, Node::RED);
         if (_root == nullptr) {
             node->color = Node::BLACK;
@@ -73,7 +93,7 @@ public:
     }
 
 private:
-   void _print(const std::string& prefix, const Node* node, bool isLeft)
+   void _print(const std::string& prefix, const Node* node, bool isLeft) const noexcept
     {
         if( node != nullptr )
         {
@@ -92,7 +112,7 @@ private:
 
     void _insert(Node* node, Node* current_node) {
         if (node->key == current_node->key) {
-            throw except::key_already_exists_exception();
+            throw except::key_already_exists_exception(node->key);
         }
 
         if (node->key < current_node->key) {
@@ -117,7 +137,7 @@ private:
 
     void _recolor(Node* node) {
         if (node == nullptr) {
-            throw except::null_node_access_exception();
+            throw except::null_node_access_exception("_recolor(Node*)");
         }
         if (node->color == Node::RED) {
             node->color = Node::BLACK;
@@ -129,7 +149,7 @@ private:
 
     void _rotate_left(Node* rotation_root) {
         if (rotation_root == nullptr) {
-            throw except::null_node_access_exception();
+            throw except::null_node_access_exception("_rotate_left(Node*)");
         }
 
         Node* new_root = rotation_root->right; 
@@ -156,7 +176,7 @@ private:
 
     void _rotate_right(Node* rotation_root) {
         if (rotation_root == nullptr) {
-            throw except::null_node_access_exception();
+            throw except::null_node_access_exception("_rotate_right(Node*)");
         }
         Node* new_root = rotation_root->left; 
         rotation_root->left = new_root->right;
