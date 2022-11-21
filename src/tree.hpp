@@ -107,7 +107,7 @@ public:
         _rebalance(node);
     }
 
-    int find_from_begin(const size_t index) const noexcept {
+    int find_from_begin(const size_t index) const {
         std::stack<Node *> s;
         Node* curr = _root;
 
@@ -264,7 +264,7 @@ private:
         rotation_root->parent = new_root;
     }
     
-    void _rebalance(Node* inserted) noexcept {
+    void _rebalance(Node* inserted) {
         if (inserted == nullptr) {
             return;
         }

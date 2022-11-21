@@ -66,9 +66,9 @@ private:
 
 class Application {
     struct CliCommand {
-        const char* cmd;
+        const char cmd;
         const int arg;
-        CliCommand(const char* cmd, const int arg) : cmd{ cmd }, arg{ arg } {
+        CliCommand(const char cmd, const int arg) : cmd{ cmd }, arg{ arg } {
             //empty
         }
     };
@@ -109,7 +109,7 @@ private:
 
         if(_validate(tokens)){
             for(size_t i = 0; i < tokens.size(); i += 2) {
-                commands.push_back(CliCommand(tokens[i].c_str(), stoi(tokens[i+1])));
+                commands.push_back(CliCommand(*tokens[i].c_str(), stoi(tokens[i+1])));
             }
         }
         return commands;
@@ -136,7 +136,7 @@ private:
 
     void _execute() {
         for (const auto& token : _tokens) {
-            switch (*token.cmd)
+            switch (token.cmd)
             {
             case 'k':
                 _tree.insert(token.arg);
