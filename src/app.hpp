@@ -16,6 +16,7 @@
 
 namespace STC {
 
+namespace except{
 
 class empty_command_line_exception : public std::exception {
 public:
@@ -30,6 +31,8 @@ public:
 
     }
 };
+
+}
 
 class Application {
     struct CliCommand {
@@ -65,7 +68,7 @@ private:
 
     std::vector<CliCommand> _parse() {
         if (_input_line.empty()) {
-            throw empty_command_line_exception();
+            throw except::empty_command_line_exception();
         }
         std::istringstream iss(_input_line);
         std::vector<std::string> tokens{std::istream_iterator<std::string>{iss},
@@ -85,17 +88,17 @@ private:
     bool _validate(const std::vector<std::string>& tokens) {
         size_t sz = tokens.size();
         if (sz % 2 != 0) {
-            throw invalid_command_line_argument_exception();
+            throw except::invalid_command_line_argument_exception();
         }
         for(int i = 0; i < sz; i += 2) {
             const std::string* token = &tokens.at(i);
             const std::string* arg = &tokens.at(i+1);
 
             if (*token != "k" && *token != "m" && *token != "n") {
-                throw invalid_command_line_argument_exception();
+                throw except::invalid_command_line_argument_exception();
             }
             if (!_is_integer(*arg)) {
-                throw invalid_command_line_argument_exception();
+                throw except::invalid_command_line_argument_exception();
             }
         }
         return true;
@@ -109,17 +112,19 @@ private:
                 _tree.insert(token.arg);
                 break;
             case 'm':
-
+                //_tree.find_from_begin(token.arg);
                 break;
             case 'n':
-
+                //__tree.count_nodes_under(token.arg);
                 break;
             default:
                 break;
             }
         }
     }
+
 };
-}
+
+} //namespace STC
 
 #endif
