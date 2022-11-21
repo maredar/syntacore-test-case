@@ -85,9 +85,49 @@ public:
     RBTree() : _root{ nullptr } {
         //empty
     }
+ 
+    RBTree(const RBTree& that) : _root{ nullptr } {
+        if(&that == this) {
+            return;
+        }
+        if(that._root == nullptr) {
+            std::cerr << "Warning: tree constructed from empty tree." << std::endl;
+            return;
+        }
+        _deep_copy(_root, that._root);
+    }
+
+    RBTree(RBTree&& that) : _root{ nullptr } {
+        if (&that == this) {
+            return;
+        }
+        if (that._root == nullptr) {
+            std::cerr << "Warning: tree move constructed from empty tree." << std::endl;
+            return;
+        }
+        _root = std::move(that._root);
+        that._root = nullptr;
+    }
 
     ~RBTree() {
         _clear_tree();
+    }
+
+public:
+    RBTree& operator=(const RBTree& that) {
+        if (&that == this) {
+            return *this;
+        }
+        _deep_copy(_root, that._root);
+    }
+
+    RBTree& operator=(RBTree&& that) {
+        if (&that == this) {
+            return *this;
+        }
+        _root = std::move(that._root);
+        that._root = nullptr;
+        return *this;
     }
 
 public:
@@ -142,6 +182,15 @@ public:
     }
 
 private:
+    void _deep_copy(Node* dest_node, const Node* source_node) {
+        if (source_node == nullptr) {
+            return;
+        }
+        dest_node = new Node(*source_node);
+        _deep_copy(dest_node->left, source_node->left);
+        _deep_copy(dest_node->right, source_node->right);
+    }
+
     size_t _count_nodes_less(const int key, Node* subtree_root) const noexcept {
         if (subtree_root == nullptr) {
             return 0;
@@ -164,7 +213,7 @@ private:
         }
     }
 
-   void _print(const std::string& prefix, const Node* node, bool isLeft) const noexcept
+    void _print(const std::string& prefix, const Node* node, bool isLeft) const noexcept
     {
         if( node != nullptr )
         {
