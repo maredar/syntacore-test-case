@@ -118,6 +118,7 @@ public:
         if (&that == this) {
             return *this;
         }
+        _clear_tree();
         _deep_copy(_root, that._root);
     }
 
@@ -125,6 +126,7 @@ public:
         if (&that == this) {
             return *this;
         }
+        _clear_tree();
         _root = std::move(that._root);
         that._root = nullptr;
         return *this;
