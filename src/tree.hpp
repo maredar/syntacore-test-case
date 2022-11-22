@@ -393,6 +393,7 @@ private:
             }
             delete node;
         }
+        _root = nullptr;
     }
 
 private:
